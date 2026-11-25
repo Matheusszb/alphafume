@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import '../styles/global.css';
+import '../styles/quote.css';
 import { Header, Footer, FloatingActions } from '../components/layout/SiteChrome';
 import { AnalyticsConsent } from '../components/layout/AnalyticsConsent';
 import { business } from '../config/business';
