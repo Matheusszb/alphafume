@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import '../styles/global.css';
 import '../styles/quote.css';
+import '../styles/cinematic.css';
 import { Header, Footer, FloatingActions } from '../components/layout/SiteChrome';
+import CinematicAtmosphere from '../components/layout/CinematicAtmosphere';
 import { AnalyticsConsent } from '../components/layout/AnalyticsConsent';
 import { business } from '../config/business';
 import { pageMetadata } from '../lib/metadata';
@@ -21,7 +23,7 @@ const organization = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="pt-BR"><body>
     <a className="skip-link" href="#main">Pular para o conteúdo</a>
-    <Header/><main id="main">{children}</main><Footer/><FloatingActions/><AnalyticsConsent/>
+    <CinematicAtmosphere/><Header/><main id="main">{children}</main><Footer/><FloatingActions/><AnalyticsConsent/>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }}/>
   </body></html>;
 }

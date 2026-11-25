@@ -1,0 +1,229 @@
+/* A restrained, GPU-friendly light rig shared by every route. */
+.cinematic-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  perspective: 900px;
+}
+.cinematic-spotlight {
+  --pointer-x: 72vw;
+  --pointer-y: 34vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: min(55vw, 740px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(235, 27, 48, .12), rgba(155, 18, 34, .04) 33%, transparent 66%);
+  transform: translate3d(calc(var(--pointer-x) - 50%), calc(var(--pointer-y) - 50%), 0);
+  filter: blur(12px);
+  transition: transform .34s ease-out;
+  animation: spotlightBreath 7s ease-in-out infinite alternate;
+}
+.cinematic-beam {
+  position: absolute;
+  width: 65vw;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 35, 56, .25), rgba(255,255,255,.32), transparent);
+  box-shadow: 0 0 22px 3px rgba(220, 21, 40, .16);
+  transform-origin: center;
+  animation: beamPass 11s linear infinite;
+}
+.cinematic-beam-one { top: 19%; left: -65vw; transform: rotate(-19deg); }
+.cinematic-beam-two { top: 71%; left: -65vw; opacity: .6; animation-delay: -5.5s; }
+.cinematic-particles { position: absolute; inset: 0; transform-style: preserve-3d; }
+.cinematic-particles i {
+  position: absolute;
+  left: var(--particle-x);
+  top: var(--particle-y);
+  width: calc(2px + var(--particle-depth) * .8px);
+  height: calc(2px + var(--particle-depth) * .8px);
+  border-radius: 50%;
+  background: #ffd6dc;
+  box-shadow: 0 0 11px 2px rgba(255, 35, 58, .55);
+  opacity: .36;
+  animation: particleDrift calc(7s + var(--particle-depth) * 1.15s) ease-in-out infinite alternate;
+  animation-delay: calc(var(--particle-index) * -.63s);
+  will-change: transform;
+}
+@keyframes particleDrift {
+  0% { transform: translate3d(-24px, 36px, calc(var(--particle-depth) * -28px)) rotateX(20deg) scale(.58); opacity: .08; }
+  45% { opacity: .54; }
+  100% { transform: translate3d(48px, -110px, calc(var(--particle-depth) * 35px)) rotateX(-25deg) scale(1.35); opacity: .14; }
+}
+@keyframes beamPass { from { translate: 0 0; } to { translate: 190vw -22vh; } }
+@keyframes spotlightBreath { from { opacity: .5; scale: .82; } to { opacity: 1; scale: 1.16; } }
+
+main, .site-footer { position: relative; }
+.hero > .container, .section > .container, .page-hero > .container,
+.request-hero > .container, .request-workspace > .container,
+.cta-band > .container, .site-footer > .container { position: relative; z-index: 3; }
+.site-footer { z-index: 3; }
+
+.hero-image, .page-hero.has-image > img, .request-hero-image {
+  animation: cinematicImage 19s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.split-photo img { animation: cinematicImage 21s ease-in-out infinite alternate; }
+@keyframes cinematicImage { from { transform: scale(1.025) translate3d(-.5%, 0, 0); } to { transform: scale(1.09) translate3d(1%, -1%, 0); } }
+.hero::before, .page-hero::after, .request-hero::after { animation: cinematicShade 9s ease-in-out infinite alternate; }
+@keyframes cinematicShade { from { opacity: .91; } to { opacity: 1; } }
+.hero::after { animation: heroGlow 8s ease-in-out infinite alternate; }
+.section, .request-workspace { isolation: isolate; }
+.page-hero:not(.has-image) { background: radial-gradient(ellipse at 84% 22%, #271016, #111215 57%, #08090a); }
+.page-hero:not(.has-image)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,.055) 48%, transparent 61%);
+  animation: sectionLight 10s ease-in-out infinite alternate;
+}
+.split-photo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 36%, rgba(255,255,255,.16) 49%, transparent 60%);
+  transform: translate3d(-95%,0,0);
+  animation: photoReflection 9s ease-in-out infinite;
+}
+@keyframes photoReflection { 35%, 100% { transform: translate3d(95%,0,0); } }
+.section::before, .request-workspace::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 47% 38% at 83% 28%, rgba(180, 20, 37, .12), transparent 75%),
+              linear-gradient(115deg, transparent 25%, rgba(255,255,255,.025) 45%, transparent 62%);
+  animation: sectionLight 13s ease-in-out infinite alternate;
+}
+@keyframes sectionLight { from { transform: translate3d(-6%, 2%, 0); opacity: .45; } to { transform: translate3d(7%, -3%, 0); opacity: 1; } }
+
+:is(.cinematic-card, .contact-card, .empty-state, .product-card, .info-panel) {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --card-x: 50%;
+  --card-y: 50%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transform: perspective(950px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translate3d(0, 0, 0);
+  transform-style: preserve-3d;
+  transition: transform .3s ease-out, border-color .3s, box-shadow .3s, background .3s;
+  box-shadow: 0 14px 28px rgba(0,0,0,.2), inset 0 1px rgba(255,255,255,.07);
+}
+:is(.cinematic-card, .contact-card, .empty-state, .product-card, .info-panel)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(260px circle at var(--card-x) var(--card-y), rgba(255,255,255,.13), transparent 65%);
+  opacity: .5;
+  transition: opacity .25s;
+}
+:is(.cinematic-card, .contact-card, .empty-state, .product-card, .info-panel)::after {
+  content: '';
+  position: absolute;
+  inset: -70% -45%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 39%, rgba(255,255,255,.11) 48%, rgba(255,80,98,.13) 50%, transparent 59%);
+  transform: translate3d(-65%, 0, 0) rotate(5deg);
+  animation: cardReflection 8s ease-in-out infinite;
+}
+:is(.cinematic-card, .contact-card, .empty-state, .product-card, .info-panel):hover,
+:is(.cinematic-card, .contact-card, .empty-state, .product-card, .info-panel):focus-within {
+  border-color: rgba(255, 66, 84, .85);
+  box-shadow: 0 23px 45px rgba(0,0,0,.38), 0 0 27px rgba(216, 19, 40, .16), inset 0 1px rgba(255,255,255,.14);
+}
+.cinematic-card:hover::before, .cinematic-card:focus-within::before,
+.contact-card:hover::before, .empty-state:hover::before, .product-card:hover::before, .info-panel:hover::before { opacity: 1; }
+.cinematic-card:nth-child(2n)::after { animation-delay: -3.1s; }
+.cinematic-card:nth-child(3n)::after { animation-delay: -5.7s; }
+@keyframes cardReflection { 0%, 20% { transform: translate3d(-65%, 0, 0) rotate(5deg); } 52%, 100% { transform: translate3d(65%, 0, 0) rotate(5deg); } }
+.service-card:hover { transform: perspective(950px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)); }
+.service-card-image img { transition: transform .8s ease; }
+
+.quote-panel {
+  position: relative;
+  isolation: isolate;
+  box-shadow: 0 25px 70px rgba(0,0,0,.36), inset 0 1px rgba(255,255,255,.07);
+}
+.quote-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 53% 30% at 75% -4%, rgba(194, 31, 48, .16), transparent 85%);
+  animation: spotlightBreath 7s ease-in-out infinite alternate;
+}
+.quote-progress-rail {
+  height: 4px;
+  margin: -5px 0 21px;
+  overflow: visible;
+  background: #24262b;
+  box-shadow: inset 0 1px 3px #000;
+}
+.quote-progress-rail span {
+  position: relative;
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #9c0618, #ff3049 76%, #fff0f2);
+  box-shadow: 0 0 12px #ee1028, 0 0 25px #e4001a88;
+  transition: width .55s cubic-bezier(.18,.8,.25,1);
+}
+.quote-progress-rail span::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 12px 4px #ff213b;
+  animation: progressPulse 1.8s ease-in-out infinite alternate;
+}
+@keyframes progressPulse { to { opacity: .55; scale: .72; } }
+.quote-stepper li.current { box-shadow: 0 0 20px rgba(255, 18, 42, .22), inset 0 0 25px rgba(255, 18, 42, .09); }
+.quote-stepper li.current span { animation: progressPulse 1.8s ease-in-out infinite alternate; }
+.quote-step-scene { transform-origin: 50% 15%; perspective: 900px; }
+.quote-service.selected { box-shadow: 0 17px 35px #0007, 0 0 22px #f0162e38, inset 0 1px #ffffff26; }
+.quote-service.selected .quote-service-check { box-shadow: 0 0 12px #ff253caa; }
+.quote-review-card { min-width: 0; }
+.quote-sidebar { box-shadow: 0 22px 48px #0008; }
+.quote-sidebar-visual img { animation: cinematicImage 16s ease-in-out infinite alternate; }
+.quote-field input:focus, .quote-field select:focus, .quote-field textarea:focus { box-shadow: 0 0 0 2px #ed102333, 0 0 20px #e5143030; }
+.btn-red { box-shadow: 0 10px 24px rgba(224, 0, 27, .18); }
+.btn-red:hover { box-shadow: 0 13px 30px rgba(224, 0, 27, .32); }
+.faq-list details { transition: background .3s, box-shadow .3s; }
+.faq-list details[open] { background: linear-gradient(90deg, rgba(199,21,38,.13), transparent 72%); box-shadow: inset 3px 0 #e7243b; }
+.faq-list summary:hover { color: #fff; text-shadow: 0 0 15px rgba(255, 50, 73, .43); }
+
+@media (max-width: 760px) {
+  .cinematic-particles i:nth-child(n+11) { display: none; }
+  .cinematic-spotlight { width: 90vw; opacity: .65; }
+  .cinematic-beam { width: 95vw; }
+  :is(.cinematic-card, .contact-card, .empty-state, .product-card, .info-panel) { transform: perspective(950px) translate3d(0,0,0); }
+  :is(.cinematic-card, .contact-card, .empty-state, .product-card, .info-panel):hover { transform: perspective(950px) translate3d(0,0,0); }
+  .quote-progress-rail { margin-top: -1px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-atmosphere { display: none; }
+  .hero-image, .page-hero.has-image > img, .request-hero-image, .split-photo img, .split-photo::before,
+  .hero::before, .page-hero::after, .request-hero::after,
+  .section::before, .request-workspace::before, .page-hero:not(.has-image)::before, .quote-panel::before,
+  .quote-sidebar-visual img, .quote-progress-rail span::after,
+  .quote-stepper li.current span, .cinematic-card::after,
+  .contact-card::after, .empty-state::after, .product-card::after, .info-panel::after { animation: none !important; }
+  :is(.cinematic-card, .contact-card, .empty-state, .product-card, .info-panel):hover,
+  .cinematic-card, .contact-card, .empty-state, .product-card, .info-panel, .service-card:hover { transform: none; transition: none; }
+  .quote-progress-rail span { transition: none; }
+}

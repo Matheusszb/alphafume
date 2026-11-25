@@ -30,6 +30,7 @@ npm run preview
 
 - Seis páginas de serviços em `src/app/servicos/[slug]/`, alimentadas por `src/data/services.ts`.
 - Agendamento e orçamento em `src/app/agendamento/` e `src/app/orcamento/`. O formulário React em `src/components/forms/DynamicServiceForm.tsx` tem quatro etapas fixas: serviços, veículo, contato e revisão. Detalhes específicos por serviço são opcionais e ficam em `src/data/quoteQuestions.ts`.
+- A atmosfera cinematográfica em `src/components/layout/CinematicAtmosphere.tsx` e `src/styles/cinematic.css` aparece em todas as rotas. Partículas, luzes e reflexos usam CSS; a luz acompanha o ponteiro em computadores. O efeito respeita `prefers-reduced-motion` e o formulário mantém todo o conteúdo em HTML estático para SEO.
 - A mensagem é aberta no WhatsApp do visitante. A solicitação só chega à empresa se ele confirmar o envio lá; a data é uma preferência, não uma reserva confirmada.
 - Serviços selecionados são guardados na sessão do navegador para continuar a solicitação entre páginas.
 - Galeria e catálogo têm estrutura para conteúdo real, com estado de preparação enquanto `src/data/gallery.ts` e `src/data/products.ts` estiverem vazios. Imagens ilustrativas não são apresentadas como trabalhos realizados pela Alpha.

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, CalendarDays, Check, CheckCheck, ChevronRight, Clipboard, MessageCircle, ShieldCheck } from 'lucide-react';
 import { services } from '../../data/services';
 import { quickQuestions, type QuickQuestion } from '../../data/quoteQuestions';
@@ -33,10 +34,12 @@ export default function DynamicServiceForm({ mode = 'orcamento' }: { mode?: 'orc
   const [customer, setCustomer] = useState<Customer>(emptyCustomer);
   const [answers, setAnswers] = useState<Record<string, Record<string, unknown>>>({});
   const [step, setStep] = useState<Step>(0);
+  const [direction, setDirection] = useState(1);
   const [errors, setErrors] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const [copied, setCopied] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const slug = new URLSearchParams(window.location.search).get('servico');
@@ -97,6 +100,7 @@ export default function DynamicServiceForm({ mode = 'orcamento' }: { mode?: 'orc
 
   function goTo(target: Step) {
     setErrors([]);
+    setDirection(target > step ? 1 : -1);
     setStep(target);
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     requestAnimationFrame(() => document.getElementById('quote-form')?.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'start' }));
@@ -133,16 +137,23 @@ export default function DynamicServiceForm({ mode = 'orcamento' }: { mode?: 'orc
       <ol className="quote-stepper" aria-label="Etapas da solicitação">{steps.map((label, index) => <li key={label} className={`${step === index ? 'current' : ''} ${step > index ? 'done' : ''}`}>
         {index < step ? <button type="button" onClick={() => goTo(index as Step)} aria-label={`Voltar para ${label}`}><span>{index + 1}</span><strong>{label}</strong></button> : <div aria-current={step === index ? 'step' : undefined}><span>{index + 1}</span><strong>{label}</strong></div>}
       </li>)}</ol>
+      <div className="quote-progress-rail" aria-hidden="true"><span style={{ width: `${(step + 1) * 25}%` }}/></div>
 
       <div className="quote-panel">
         <div className="quote-panel-top"><span>{isBooking ? 'SOLICITAÇÃO DE AGENDAMENTO' : 'SOLICITAÇÃO DE ORÇAMENTO'}</span><span>ETAPA {step + 1} DE 4</span></div>
         {errors.length > 0 && <div className="quote-errors" role="alert" tabIndex={-1} ref={errorRef}><strong>Confira estes dados para continuar:</strong><ul>{errors.map(error => <li key={error}>{error}</li>)}</ul></div>}
 
+        <AnimatePresence mode="wait" initial={false}><motion.div key={step} className="quote-step-scene"
+          initial={reducedMotion ? false : { opacity: 0, x: direction * 42, rotateY: -direction * 6, filter: 'blur(6px)' }}
+          animate={{ opacity: 1, x: 0, rotateY: 0, filter: 'blur(0px)' }}
+          exit={reducedMotion ? undefined : { opacity: 0, x: -direction * 32, rotateY: direction * 5, filter: 'blur(4px)' }}
+          transition={{ duration: reducedMotion ? 0 : .34, ease: [.2, .8, .2, 1] }}>
+
         {step === 0 && <section aria-labelledby="quote-step-title">
           <div className="quote-section-heading"><p className="eyebrow">01 / SERVIÇOS</p><h2 id="quote-step-title">O que seu veículo precisa?</h2><p>Escolha um ou mais serviços. Você poderá explicar os detalhes depois, se quiser.</p></div>
           <div className="quote-service-grid">{services.map(service => {
             const active = selected.includes(service.slug);
-            return <button type="button" key={service.slug} className={`quote-service ${active ? 'selected' : ''}`} aria-pressed={active} onClick={() => toggleService(service.slug)}>
+            return <button type="button" key={service.slug} className={`quote-service cinematic-card ${active ? 'selected' : ''}`} aria-pressed={active} onClick={() => toggleService(service.slug)}>
               <img src={service.image} alt="" width={280} height={180} loading="lazy"/>
               <span className="quote-service-copy"><small>{service.kicker}</small><strong>{service.name}</strong><span>{service.summary}</span></span>
               <span className="quote-service-check" aria-hidden="true">{active && <Check size={17}/>}</span>
@@ -179,9 +190,9 @@ export default function DynamicServiceForm({ mode = 'orcamento' }: { mode?: 'orc
         {step === 3 && <section aria-labelledby="quote-step-title">
           <div className="quote-section-heading"><p className="eyebrow">04 / REVISÃO</p><h2 id="quote-step-title">Confira antes de abrir o WhatsApp.</h2><p>O texto está pronto. Você decide se deseja enviá-lo na conversa com a Alpha.</p></div>
           <div className="quote-review-grid">
-            <div className="quote-review-card"><div><h3>Serviços</h3><button type="button" onClick={() => goTo(0)}>Editar</button></div><ul>{selected.map(slug => { const service = services.find(item => item.slug === slug)!; const question = quickQuestions[slug]; const value = answers[slug]?.[question.key]; const hasValue = value !== undefined && value !== '' && (!Array.isArray(value) || value.length > 0); return <li key={slug}><strong>{service.name}</strong>{hasValue && <span>{Array.isArray(value) ? value.join(', ') : String(value)}</span>}</li>; })}</ul></div>
-            <div className="quote-review-card"><div><h3>Veículo</h3><button type="button" onClick={() => goTo(1)}>Editar</button></div><p><strong>{vehicle.brand} {vehicle.model}</strong> · {vehicle.year}</p>{vehicle.type && <p>{vehicle.type}</p>}{vehicle.version && <p>Versão: {vehicle.version}</p>}{vehicle.color && <p>Cor: {vehicle.color}</p>}</div>
-            <div className="quote-review-card"><div><h3>Contato</h3><button type="button" onClick={() => goTo(2)}>Editar</button></div><p><strong>{customer.name}</strong></p><p>{customer.phone}</p>{customer.city && <p>{customer.city}</p>}{isBooking && <p>Preferência: {customer.date ? customer.date.split('-').reverse().join('/') : '—'} · {customer.period}</p>}{customer.notes && <p>{customer.notes}</p>}</div>
+            <div className="quote-review-card cinematic-card"><div><h3>Serviços</h3><button type="button" onClick={() => goTo(0)}>Editar</button></div><ul>{selected.map(slug => { const service = services.find(item => item.slug === slug)!; const question = quickQuestions[slug]; const value = answers[slug]?.[question.key]; const hasValue = value !== undefined && value !== '' && (!Array.isArray(value) || value.length > 0); return <li key={slug}><strong>{service.name}</strong>{hasValue && <span>{Array.isArray(value) ? value.join(', ') : String(value)}</span>}</li>; })}</ul></div>
+            <div className="quote-review-card cinematic-card"><div><h3>Veículo</h3><button type="button" onClick={() => goTo(1)}>Editar</button></div><p><strong>{vehicle.brand} {vehicle.model}</strong> · {vehicle.year}</p>{vehicle.type && <p>{vehicle.type}</p>}{vehicle.version && <p>Versão: {vehicle.version}</p>}{vehicle.color && <p>Cor: {vehicle.color}</p>}</div>
+            <div className="quote-review-card cinematic-card"><div><h3>Contato</h3><button type="button" onClick={() => goTo(2)}>Editar</button></div><p><strong>{customer.name}</strong></p><p>{customer.phone}</p>{customer.city && <p>{customer.city}</p>}{isBooking && <p>Preferência: {customer.date ? customer.date.split('-').reverse().join('/') : '—'} · {customer.period}</p>}{customer.notes && <p>{customer.notes}</p>}</div>
           </div>
           <details className="quote-message"><summary>Ver mensagem completa</summary><pre>{message}</pre></details>
           <div className="quote-send"><button type="submit" className="btn btn-red"><MessageCircle size={20} aria-hidden="true"/> ABRIR WHATSAPP COM MEU PEDIDO</button><button type="button" className="quote-copy" onClick={copy}>{copied ? <CheckCheck size={18}/> : <Clipboard size={18}/>} {copied ? 'Mensagem copiada' : 'Copiar mensagem'}</button></div>
@@ -189,6 +200,7 @@ export default function DynamicServiceForm({ mode = 'orcamento' }: { mode?: 'orc
         </section>}
 
         {step < 3 && <div className="quote-actions">{step > 0 && <button type="button" className="quote-back" onClick={() => goTo((step - 1) as Step)}><ArrowLeft size={18}/> Voltar</button>}<button type="submit" className="btn btn-red">{step === 0 ? 'CONTINUAR PARA VEÍCULO' : step === 1 ? 'CONTINUAR PARA CONTATO' : 'REVISAR SOLICITAÇÃO'}<ChevronRight size={19} aria-hidden="true"/></button></div>}
+        </motion.div></AnimatePresence>
       </div>
     </form>
 
