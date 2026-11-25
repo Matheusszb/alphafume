@@ -1,8 +1,0 @@
----
-import BaseLayout from '../layouts/BaseLayout.astro';
-import DynamicServiceForm from '../components/forms/DynamicServiceForm';
----
-<BaseLayout title="Solicitar Agendamento | Alpha Fumê e Faróis" description="Escolha os serviços e informe sua data de preferência. A Alpha confirmará a disponibilidade pelo WhatsApp.">
-  <section class="page-hero"><div class="container"><nav class="breadcrumbs" aria-label="Caminho"><a href="/">Início</a><span>/</span><span>Agendamento</span></nav><p class="eyebrow">SUA PREFERÊNCIA</p><h1>AGENDE O CUIDADO DO SEU VEÍCULO.</h1><p>Informe uma data de preferência. A disponibilidade será confirmada na conversa pelo WhatsApp.</p></div></section>
-  <section class="section section-dark"><div class="container"><DynamicServiceForm client:load mode="agendamento" /></div></section>
-</BaseLayout>

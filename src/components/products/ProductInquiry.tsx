@@ -1,3 +1,4 @@
+'use client';
 import { useState } from 'react';
 import type { Product } from '../../types/content';
 import { whatsappUrl } from '../../lib/quote';

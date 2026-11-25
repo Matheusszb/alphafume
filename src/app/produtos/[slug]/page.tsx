@@ -1,0 +1,10 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import ProductInquiry from '../../../components/products/ProductInquiry';
+import { PageHero } from '../../../components/PageParts';
+import { products } from '../../../data/products';
+import { pageMetadata } from '../../../lib/metadata';
+
+export function generateStaticParams() { const active = products.filter(item => item.active); return active.length ? active.map(item => ({ slug: item.slug })) : [{ slug: 'catalogo-em-preparacao' }]; }
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const { slug } = await params; const item = products.find(product => product.active && product.slug === slug); return item ? pageMetadata(`${item.name} | Alpha Fumê e Faróis`, item.summary, `/produtos/${slug}/`, item.image) : { robots: { index: false, follow: false } }; }
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) { const { slug } = await params; const product = products.find(item => item.active && item.slug === slug); if (!product) { if (slug !== 'catalogo-em-preparacao') notFound(); return <PageHero kicker="CATÁLOGO ALPHA" title="CATÁLOGO EM PREPARAÇÃO." description="Os produtos serão exibidos quando os detalhes forem confirmados pela Alpha." crumbs={[{ label: 'Produtos', href: '/produtos/' }, { label: 'Em preparação' }]}/>; } return <><PageHero kicker={product.category} title={product.name.toUpperCase()} description={product.summary} crumbs={[{ label: 'Produtos', href: '/produtos/' }, { label: product.name }]}/><section className="section section-dark"><div className="container split-section"><div className="split-photo"><img src={product.image} alt={product.name} width={800} height={600}/></div><div className="split-copy"><p className="eyebrow">{product.brand}</p><h2>DETALHES DO PRODUTO.</h2><p>{product.description}</p><ul>{product.features.map(feature => <li key={feature}>{feature}</li>)}</ul><ProductInquiry product={product}/></div></div></section></>; }

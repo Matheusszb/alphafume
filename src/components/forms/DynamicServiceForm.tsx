@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Check, CheckCheck, Clipboard, CarFront, Car, Truck, BusFront, CalendarDays, MessageCircle, ShieldCheck } from 'lucide-react';
 import { services } from '../../data/services';
@@ -25,10 +26,15 @@ export default function DynamicServiceForm({ mode = 'orcamento' }: { mode?: 'orc
 
   useEffect(() => {
     const slug = new URLSearchParams(window.location.search).get('servico');
-    if (slug && serviceForms.some((form) => form.slug === slug)) setSelected([slug]);
+    let saved: string[] = [];
+    try { const parsed = JSON.parse(sessionStorage.getItem('alpha_selected_services') || '[]'); if (Array.isArray(parsed)) saved = parsed.filter((item): item is string => typeof item === 'string' && serviceForms.some((form) => form.slug === item)); } catch { /* Ignore stale browser data. */ }
+    if (slug && serviceForms.some((form) => form.slug === slug)) saved = Array.from(new Set([...saved, slug]));
+    setSelected(saved);
     track('form_start', { mode });
     setReady(true);
   }, [mode]);
+
+  useEffect(() => { if (ready) sessionStorage.setItem('alpha_selected_services', JSON.stringify(selected)); }, [ready, selected]);
 
   const stages: Stage[] = useMemo(() => [
     { kind: 'services' }, { kind: 'vehicle' },

@@ -2,18 +2,21 @@ import { test, expect } from '@playwright/test';
 
 test('home links to services and the service preselects the quote form', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level:1 })).toContainText('PROTEÇÃO E ESTÉTICA');
+  await expect(page.getByRole('heading', { level:1 })).toContainText('PROTEÇÃO, ESTÉTICA E PERFORMANCE');
+  const logo = page.locator('.site-header .brand img');
+  await expect(logo).toHaveAttribute('src', '/images/logo-alpha.webp');
+  expect(await logo.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
   await page.goto('/servicos/insulfilm');
-  await expect(page.getByRole('heading', { level:1 })).toHaveText('Aplicação de Insulfilm');
-  await page.getByRole('link', { name:'SOLICITAR ORÇAMENTO' }).first().click();
-  await expect(page).toHaveURL(/\/orcamento\?servico=insulfilm/);
+  await expect(page.getByRole('heading', { level:1 })).toHaveText('APLICAÇÃO DE INSULFILM');
+  await page.getByRole('link', { name:'SELECIONAR ESTE SERVIÇO' }).click();
+  await expect(page).toHaveURL(/\/agendamento\/\?servico=insulfilm/);
   await expect(page.getByRole('button', { name:/Aplicação de Insulfilm/ })).toHaveAttribute('aria-pressed','true');
 });
 
 test('form requires service, vehicle and service answers', async ({ page }) => {
   await page.goto('/orcamento');
   await page.getByRole('button', { name:/Continuar/i }).click();
-  await expect(page.getByRole('alert')).toContainText('Selecione pelo menos um serviço');
+  await expect(page.locator('.form-errors')).toContainText('Selecione pelo menos um serviço');
   await page.getByRole('button', { name:/Aplicação de Insulfilm/ }).click();
   await page.getByRole('button', { name:/Continuar/i }).click();
   await page.getByRole('button', { name:'Sedan', exact:true }).click();
@@ -23,10 +26,18 @@ test('form requires service, vehicle and service answers', async ({ page }) => {
   await page.getByRole('button', { name:/Continuar/i }).click();
   await expect(page.getByRole('heading', { name:'Tipo de película' })).toBeVisible();
   await page.getByRole('button', { name:/Continuar/i }).click();
-  await expect(page.getByRole('alert')).toContainText('Qual tipo de película interessa');
+  await expect(page.locator('.form-errors')).toContainText('Qual tipo de película interessa');
   await page.getByRole('button', { name:'Nanocerâmica', exact:true }).click();
   await page.getByRole('button', { name:/Continuar/i }).click();
   await expect(page.getByRole('heading', { name:'Transparência' })).toBeVisible();
+});
+
+test('selected services survive navigation within the session', async ({ page }) => {
+  await page.goto('/orcamento');
+  await page.getByRole('button', { name: /Aplicação de Insulfilm/ }).click();
+  await page.goto('/servicos');
+  await page.goto('/agendamento');
+  await expect(page.getByRole('button', { name: /Aplicação de Insulfilm/ })).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('empty catalog and gallery avoid invented items', async ({ page }) => {
@@ -78,8 +89,8 @@ test('mobile menu and narrow layout stay usable', async ({page}) => {
   const menu = page.getByRole('button',{name:'Abrir menu'});
   await menu.click();
   await expect(page.getByRole('navigation',{name:'Menu para celular'})).toBeVisible();
-  await page.getByRole('navigation',{name:'Menu para celular'}).getByRole('link',{name:'Produtos'}).click();
-  await expect(page).toHaveURL(/\/produtos/);
+  await page.getByRole('navigation',{name:'Menu para celular'}).getByRole('link',{name:'Galeria'}).click();
+  await expect(page).toHaveURL(/\/galeria/);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(overflow).toBe(false);
 });
@@ -110,7 +121,7 @@ test('booking asks for a date before review', async ({page}) => {
   await page.getByLabel('WhatsApp com DDD *').fill('79999999999');
   await page.getByLabel('Cidade *').fill('Aracaju');
   await next.click();
-  await expect(page.getByRole('alert')).toContainText('Escolha uma data de preferência');
+  await expect(page.locator('.form-errors')).toContainText('Escolha uma data de preferência');
   await page.locator('input[type="date"]').fill('2099-01-01');
   await next.click();
   await expect(page.getByRole('heading',{name:'Tudo certo?'})).toBeVisible();

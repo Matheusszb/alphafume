@@ -1,0 +1,7 @@
+import type { Metadata } from 'next';
+import { PageHero } from '../../components/PageParts';
+import { getArticles } from '../../lib/blog';
+import { pageMetadata } from '../../lib/metadata';
+
+export const metadata: Metadata = pageMetadata('Blog Automotivo | Alpha Fumê e Faróis', 'Guias sobre películas automotivas, para-brisas, PPF e faróis para ajudar você a cuidar do veículo.', '/blog/');
+export default function BlogPage() { const articles = getArticles(); return <><PageHero kicker="CONTEÚDO AUTOMOTIVO" title="CONHECIMENTO PARA ESCOLHER MELHOR." description="Guias diretos sobre cuidado, proteção e estética do seu veículo." crumbs={[{ label: 'Blog' }]}/><section className="section section-dark"><div className="container"><div className="service-grid">{articles.map(article => <article className="service-card" key={article.slug}><a className="service-card-image" href={`/blog/${article.slug}/`}><img src={article.image} alt="Imagem ilustrativa do artigo" width={800} height={500} loading="lazy"/></a><div className="service-card-body"><div className="card-meta"><span>{article.category}</span><time dateTime={article.publishedAt}>{new Date(article.publishedAt).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</time></div><h2 style={{ fontSize: '2rem' }}><a href={`/blog/${article.slug}/`}>{article.title}</a></h2><p>{article.description}</p><a className="text-link" href={`/blog/${article.slug}/`}>LER ARTIGO</a></div></article>)}</div></div></section></>; }

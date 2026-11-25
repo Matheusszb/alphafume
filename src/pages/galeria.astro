@@ -1,8 +1,0 @@
----
-import BaseLayout from '../layouts/BaseLayout.astro';
-import GalleryView from '../components/gallery/GalleryView';
-import { gallery } from '../data/gallery';
----
-<BaseLayout title="Galeria de Trabalhos | Alpha Fumê e Faróis" description="Veja fotografias autorizadas de trabalhos da Alpha Fumê e Faróis em películas, para-brisas, PPF e faróis.">
-  <section class="page-hero"><div class="container"><nav class="breadcrumbs" aria-label="Caminho"><a href="/">Início</a><span>/</span><span>Galeria</span></nav><p class="eyebrow">TRABALHOS ALPHA</p><h1>DETALHES QUE MERECEM SER VISTOS.</h1><p>Um espaço reservado para registrar serviços reais, com autorização dos proprietários.</p></div></section><section class="section section-dark"><div class="container">{gallery.length ? <GalleryView client:load /> : <div class="empty-state"><h2>GALERIA EM PREPARAÇÃO.</h2><p>Publicaremos aqui somente fotografias autorizadas de trabalhos reais da Alpha. Enquanto isso, conheça nossos serviços e converse sobre o seu veículo.</p><a class="btn btn-red" href="/servicos">EXPLORAR SERVIÇOS</a></div>}</div></section>
-</BaseLayout>

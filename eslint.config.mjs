@@ -1,11 +1,9 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import astro from 'eslint-plugin-astro';
 
 export default [
-  { ignores: ['dist/**', '.astro/**', 'node_modules/**', 'test-results/**', 'playwright-report/**'] },
+  { ignores: ['dist/**', '.astro/**', '.next/**', 'out/**', 'node_modules/**', 'test-results/**', 'playwright-report/**', 'next-env.d.ts'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  ...astro.configs.recommended,
   { rules: { '@typescript-eslint/no-explicit-any': 'off' } }
 ];

@@ -1,8 +1,0 @@
----
-import BaseLayout from '../layouts/BaseLayout.astro';
-import CTA from '../components/CTA.astro';
-import { faqs } from '../data/faq';
----
-<BaseLayout title="Perguntas Frequentes | Alpha Fumê e Faróis" description="Respostas sobre Insulfilm, PPF, para-brisas, faróis, orçamentos e agendamento na Alpha Fumê e Faróis." schema={[{ '@context':'https://schema.org', '@type':'FAQPage', mainEntity:faqs.map(item => ({ '@type':'Question', name:item.question, acceptedAnswer:{'@type':'Answer',text:item.answer} })) }]}>
-  <section class="page-hero"><div class="container"><nav class="breadcrumbs" aria-label="Caminho"><a href="/">Início</a><span>/</span><span>Perguntas frequentes</span></nav><p class="eyebrow">TIRE SUAS DÚVIDAS</p><h1>PERGUNTAS FREQUENTES.</h1><p>Informações claras para ajudar você a escolher o próximo passo.</p></div></section><section class="section section-dark"><div class="container"><div class="faq-list">{faqs.map(item => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></div></section><CTA />
-</BaseLayout>

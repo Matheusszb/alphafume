@@ -1,3 +1,4 @@
+'use client';
 import { useMemo, useState } from 'react';
 import { Search, ShoppingBag, Trash2 } from 'lucide-react';
 import { products } from '../../data/products';
