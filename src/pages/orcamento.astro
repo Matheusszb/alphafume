@@ -1,0 +1,8 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DynamicServiceForm from '../components/forms/DynamicServiceForm';
+---
+<BaseLayout title="Solicitar Orçamento | Alpha Fumê e Faróis" description="Configure os serviços desejados para seu veículo e envie sua solicitação de orçamento diretamente pelo WhatsApp.">
+  <section class="page-hero"><div class="container"><nav class="breadcrumbs" aria-label="Caminho"><a href="/">Início</a><span>/</span><span>Orçamento</span></nav><p class="eyebrow">FEITO PARA O SEU VEÍCULO</p><h1>MONTE SUA SOLICITAÇÃO.</h1><p>Escolha os serviços, conte o que precisa e revise tudo antes de conversar com a Alpha.</p></div></section>
+  <section class="section section-dark"><div class="container"><DynamicServiceForm client:load mode="orcamento" /></div></section>
+</BaseLayout>

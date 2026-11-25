@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import CTA from '../../components/CTA.astro';
+import { services } from '../../data/services';
+---
+<BaseLayout title="Serviços Automotivos | Alpha Fumê e Faróis" description="Conheça os serviços de Insulfilm, PPF, para-brisas e faróis da Alpha Fumê e Faróis. Solicite um orçamento personalizado.">
+  <section class="page-hero"><div class="container"><nav class="breadcrumbs" aria-label="Caminho"><a href="/">Início</a><span>/</span><span>Serviços</span></nav><p class="eyebrow">NOSSO TRABALHO</p><h1>SERVIÇOS PARA QUEM VALORIZA CADA DETALHE.</h1><p>Proteção, vidros e iluminação automotiva com uma solução pensada para o seu veículo.</p></div></section>
+  <section class="section section-dark"><div class="container"><div class="service-grid">{services.map((service,index) => <ServiceCard service={service} index={index} />)}</div></div></section><CTA />
+</BaseLayout>

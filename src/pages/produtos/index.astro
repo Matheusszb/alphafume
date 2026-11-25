@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCatalog from '../../components/products/ProductCatalog';
+import { products } from '../../data/products';
+import { business } from '../../config/business';
+const hasProducts = products.some(product => product.active);
+---
+<BaseLayout title="Produtos Automotivos | Alpha Fumê e Faróis" description="Catálogo de produtos automotivos da Alpha. Consulte opções e disponibilidade pelo WhatsApp.">
+  <section class="page-hero"><div class="container"><nav class="breadcrumbs" aria-label="Caminho"><a href="/">Início</a><span>/</span><span>Produtos</span></nav><p class="eyebrow">CATÁLOGO ALPHA</p><h1>PRODUTOS PARA CUIDAR DO SEU VEÍCULO.</h1><p>Consulte os produtos disponíveis e monte uma lista para conversar diretamente com a equipe.</p></div></section>
+  <section class="section section-dark"><div class="container">{hasProducts ? <ProductCatalog client:load /> : <div class="empty-state"><h2>CATÁLOGO EM PREPARAÇÃO.</h2><p>Os produtos serão exibidos aqui assim que a Alpha confirmar modelos, marcas e detalhes. Para consultar uma opção agora, fale diretamente pelo WhatsApp.</p><a class="btn btn-red" href={`https://wa.me/${business.whatsapp}`} target="_blank" rel="noopener noreferrer">CONSULTAR PELO WHATSAPP</a></div>}</div></section>
+</BaseLayout>

@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { services } from '../../data/services';
+import { business } from '../../config/business';
+export async function getStaticPaths() { return (await getCollection('blog')).map(article => ({ params:{slug:article.id}, props:{article} })); }
+const { article } = Astro.props;
+const { Content } = await render(article);
+const schema = [{ '@context':'https://schema.org', '@type':'Article', headline:article.data.title, description:article.data.description, image:new URL(article.data.image,business.siteUrl).toString(), datePublished:article.data.publishedAt.toISOString(), ...(article.data.updatedAt ? {dateModified:article.data.updatedAt.toISOString()} : {}), publisher:{'@type':'Organization',name:business.name} }];
+---
+<BaseLayout title={`${article.data.title} | Alpha Fumê e Faróis`} description={article.data.description} image={article.data.image} type="article" schema={schema}>
+  <section class="page-hero has-image"><img src={article.data.image} alt="Imagem ilustrativa do artigo" width="1600" height="900"/><div class="container"><nav class="breadcrumbs" aria-label="Caminho"><a href="/">Início</a><span>/</span><a href="/blog">Blog</a><span>/</span><span>{article.data.title}</span></nav><p class="eyebrow">{article.data.category} · <time datetime={article.data.publishedAt.toISOString()}>{article.data.publishedAt.toLocaleDateString('pt-BR')}</time></p><h1>{article.data.title}</h1><p>{article.data.description}</p></div></section>
+  <section class="section section-dark"><div class="container"><article class="prose"><Content /></article>{article.data.faq.length>0 && <div style="margin-top:70px"><h2 style="font-size:3rem">PERGUNTAS FREQUENTES</h2><div class="faq-list">{article.data.faq.map(item => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></div>}{article.data.relatedServices.length>0 && <div style="margin-top:70px"><p class="eyebrow">SERVIÇOS RELACIONADOS</p><div class="filters">{article.data.relatedServices.map(slug => { const service = services.find(item => item.slug===slug); return service && <a class="btn btn-outline" href={`/servicos/${slug}`}>{service.name}</a>; })}</div></div>}</div></section>
+</BaseLayout>

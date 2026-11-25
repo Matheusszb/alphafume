@@ -1,0 +1,4 @@
+---
+const { title = 'Seu veículo merece atenção em cada detalhe.', text = 'Conte o que precisa e receba uma orientação personalizada da Alpha.', service = '' } = Astro.props;
+---
+<section class="cta-band"><div class="container cta-inner"><div><p class="eyebrow">PRÓXIMO PASSO</p><h2>{title}</h2><p>{text}</p></div><div class="cta-actions"><a class="btn btn-red" href={`/orcamento${service ? `?servico=${service}` : ''}`}>SOLICITAR ORÇAMENTO</a><a class="btn btn-outline" href="/agendamento">AGENDAR SERVIÇO</a></div></div></section>

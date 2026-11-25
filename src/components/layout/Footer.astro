@@ -1,0 +1,13 @@
+---
+import { business } from '../../config/business';
+import { services } from '../../data/services';
+---
+<footer class="site-footer">
+  <div class="container footer-main">
+    <div class="footer-intro"><a class="brand" href="/">{business.logoPath ? <img src={business.logoPath} alt="Alpha Fumê e Faróis" width="180" height="52" /> : <span class="brand-text"><span>ALPHA<span class="brand-slash">//</span></span><small>FUMÊ & FARÓIS</small></span>}</a><p>Proteção, estética, vidros e iluminação automotiva. Cuidado em cada detalhe do seu veículo.</p></div>
+    <div><h2>Explore</h2><a href="/servicos">Serviços</a><a href="/produtos">Produtos</a><a href="/galeria">Galeria</a><a href="/sobre">Sobre nós</a><a href="/blog">Blog</a></div>
+    <div><h2>Serviços</h2>{services.map(service => <a href={`/servicos/${service.slug}`}>{service.name}</a>)}</div>
+    <div><h2>Contato</h2><a href={`https://wa.me/${business.whatsapp}`} target="_blank" rel="noopener noreferrer">WhatsApp {business.phoneDisplay}</a><a href={business.instagram} target="_blank" rel="noopener noreferrer">Instagram {business.instagramHandle}</a>{business.address && <p>{business.address}</p>}{business.hours && <p>{business.hours}</p>}<a href="/contato">Fale com a Alpha</a></div>
+  </div>
+  <div class="container footer-bottom"><span>© {new Date().getFullYear()} Alpha Fumê e Faróis. Todos os direitos reservados.</span><div><a href="/politica-de-privacidade">Privacidade</a><a href="/termos-de-uso">Termos de uso</a></div></div>
+</footer>

@@ -1,0 +1,35 @@
+---
+import { business } from '../../config/business';
+import { services } from '../../data/services';
+---
+<header id="site-header" class="site-header">
+  <div class="container nav-inner">
+    <a class="brand" href="/">
+      {business.logoPath ? <img src={business.logoPath} alt="Alpha Fumê e Faróis" width="180" height="52" /> : <span class="brand-text"><span>ALPHA<span class="brand-slash">//</span></span><small>FUMÊ & FARÓIS</small></span>}
+    </a>
+    <nav class="desktop-nav" aria-label="Navegação principal">
+      <a href="/">Início</a>
+      <div class="nav-dropdown"><a href="/servicos">Serviços</a><div class="dropdown-panel">{services.map(service => <a href={`/servicos/${service.slug}`}>{service.name}</a>)}</div></div>
+      <a href="/produtos">Produtos</a><a href="/galeria">Galeria</a><a href="/sobre">Sobre nós</a><a href="/contato">Contato</a>
+    </nav>
+    <a class="btn btn-red nav-cta" href="/agendamento">AGENDAR SERVIÇO</a>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
+  </div>
+  <nav id="mobile-menu" class="mobile-menu" aria-label="Menu para celular" hidden>
+    <a href="/">Início</a><a href="/servicos">Serviços</a>{services.map(service => <a class="mobile-sub" href={`/servicos/${service.slug}`}>{service.name}</a>)}<a href="/produtos">Produtos</a><a href="/galeria">Galeria</a><a href="/sobre">Sobre nós</a><a href="/contato">Contato</a><a class="btn btn-red" href="/agendamento">Agendar serviço</a>
+  </nav>
+</header>
+<script>
+  const header = document.getElementById('site-header');
+  const menu = document.getElementById('mobile-menu');
+  const toggle = document.getElementById('menu-toggle');
+  const syncHeader = () => header?.classList.toggle('scrolled', window.scrollY > 24);
+  syncHeader(); window.addEventListener('scroll', syncHeader, { passive: true });
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open)); toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+    if (menu) menu.hidden = !open;
+    document.body.classList.toggle('menu-open', open);
+  });
+  menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => { if (menu) menu.hidden = true; toggle?.setAttribute('aria-expanded', 'false'); document.body.classList.remove('menu-open'); }));
+</script>
